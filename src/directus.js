@@ -27,6 +27,7 @@ export default class Directus {
     query = qs.stringify(query);
     if (query != "") query = '?' + query;
 
+    // Compute request URL
     let url = this.baseUrl + endpoint + query;
     console.log('Sending GET to', url);
 
@@ -49,8 +50,17 @@ export default class Directus {
       return await response.json();
 
     } catch (e) {
-      
-      // Parse the json error response
+
+      if (e.response.status === 404) {
+        throw new Error(`404: Could not reach "${url}" endpoint`)
+      }
+
+      // If error is a 401, throw a fatal error.
+      if (e.response.status === 401) {
+        throw new Error(`401: API key "${this.apiKey}" refused`);
+      }
+
+      // Parse the text error response
       let json = await e.response.json();
       let status = e.response.status + ": " + e.response.statusText;
 
@@ -103,6 +113,14 @@ export default class Directus {
 
     return new Table(name);
 
+  }
+
+  async files () {
+    return await this.endpoint(`files`);
+  }
+
+  async file (id) {
+    return await this.endpoint(`files/${id}`);
   }
 
 }

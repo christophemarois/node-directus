@@ -7,11 +7,11 @@ const db = new Directus('http://192.168.33.6', 'fkCMPxSyvo7SNX8H');
 
 (async () => {
 
-  let posts = await db.table('Blog').rows({
+  let data = await db.table('blog').rows({
     perPage: 1
   });
-  
-  console.log(posts);
+
+  console.log(prettyjson.render(data));
 
 })();
 
@@ -21,10 +21,10 @@ function apiMockup () {
 
   // Express route
   app.get('/services/:serviceName', (req, res) => {
-  
+
     let entry = db.table('services').row(req.params.serviceName);
     res.render('static.jade', { entry });
-  
+
   });
 
 }

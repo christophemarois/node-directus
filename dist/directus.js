@@ -16,6 +16,10 @@ var _qs = require('qs');
 
 var _qs2 = _interopRequireDefault(_qs);
 
+var _prettyjson = require('prettyjson');
+
+var _prettyjson2 = _interopRequireDefault(_prettyjson);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new _bluebird2.default(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return _bluebird2.default.resolve(value).then(function (value) { return step("next", value); }, function (err) { return step("throw", err); }); } } return step("next"); }); }; }
@@ -33,7 +37,7 @@ class Directus {
     this.apiKey = apiKey;
   }
 
-  endpoint(endpoint, query = {}) {
+  endpoint(endpoint, query = {}, silent = true) {
     var _this2 = this;
 
     return _asyncToGenerator(function* () {
@@ -42,10 +46,13 @@ class Directus {
       query = _qs2.default.stringify(query);
       if (query != "") query = '?' + query;
 
+      let url = _this2.baseUrl + endpoint + query;
+      console.log('Sending GET to', url);
+
       try {
 
         // Send query and authenticate request with API key
-        let response = yield (0, _nodeFetch2.default)(_this2.baseUrl + endpoint + query, {
+        let response = yield (0, _nodeFetch2.default)(url, {
           headers: { 'Authorization': 'Bearer ' + _this2.apiKey }
         });
 
@@ -63,14 +70,22 @@ class Directus {
 
         // Parse the json error response
         let json = yield e.response.json();
+        let status = e.response.status + ": " + e.response.statusText;
 
-        // Delete lengthy PHP traces
+        // If silent failing is disabled, throw the error instead of logging it
+        if (!silent) {
+          let error = new Error();
+          error.message = status;
+          error.json = json;
+          throw error;
+        }
+
+        // Delete detailed PHP traces
         delete json.trace;
-        delete json.traceAsString;
 
-        // Log them to the console
-        console.error(e.response.status + ":" + e.response.statusText);
-        console.error(json);
+        // Log the status, error message and text trace
+        console.log(_prettyjson2.default.render({ 'Error': status }));
+        console.log(_prettyjson2.default.render(json));
       }
     })();
   }
@@ -81,7 +96,7 @@ class Directus {
 
     class Table {
 
-      constructor(name = require('name')) {
+      constructor(name = required('name')) {
         this.name = name;
       }
 
