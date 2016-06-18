@@ -1,0 +1,50 @@
+{
+  "name": "node-directus",
+  "version": "0.1.0",
+  "description": "Node API wrapper for the Directus CMS",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christophemarois/node-directus.git"
+  },
+  "keywords": [
+    "directus",
+    "node",
+    "api",
+    "cms",
+    "dbaas"
+  ],
+  "author": "Christophe Marois",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christophemarois/node-directus/issues"
+  },
+  "homepage": "https://github.com/christophemarois/node-directus#readme",
+  "main": "dist/directus.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start": "babel-node src/directus.js",
+    "test": "babel-node test.js",
+    "build": "babel src --out-dir dist",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.10.1",
+    "babel-plugin-transform-async-to-generator": "^6.8.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.8.0"
+  },
+  "babel": {
+    "plugins": [
+      "transform-es2015-modules-commonjs",
+      "syntax-async-functions",
+      "transform-async-to-generator"
+    ]
+  },
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "node-fetch": "^1.5.3",
+    "qs": "^6.2.0",
+    "prettyjson": "^1.1.3"
+  }
+}
